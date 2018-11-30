@@ -1,12 +1,16 @@
 defmodule Day1 do
   def part_1() do
-    coord =  File.read!("assets/day1.txt")
-      |> String.split(", ")
-      |> Enum.map(fn(s) -> to_ins(s) end)
+    coord = instructions()
       |> destination()
     x = elem(coord, 1)
     y = elem(coord, 2)
     abs(x) + abs(y)
+  end
+
+  def instructions() do
+    File.read!("assets/day1.txt")
+    |> String.split(", ")
+    |> Enum.map(fn(s) -> to_ins(s) end)
   end
 
   def to_ins(s) do
@@ -20,44 +24,49 @@ defmodule Day1 do
     {a, String.to_integer(b)}
   end
 
-  defp destination(instructions) do
-    get_pos(instructions, {"N", 0, 0})
+  defp destination(instructions) when is_list(instructions) do
+    {"N", 0, 0} |> get_pos(instructions)
   end
 
-  defp get_pos([], pos) do
+  defp get_pos(pos, []) do
     pos
   end
 
-  defp get_pos([head | tail], pos) do
-    get_pos(tail, move(head, pos))
+  defp get_pos(pos, [ins | tail]) do
+    pos
+    |> move(ins)
+    |> get_pos(tail)
   end
 
-  defp move({"R", n}, {dir, x, y}) do
-    new_dir = case dir do
-      "N" -> "E"
-      "E" -> "S"
-      "S" -> "W"
-      "W" -> "N"
-    end
-    move_dir({new_dir, x, y}, n)
+  defp move({"N", x, y}, {"R", n}) do
+    {"E", x + n, y}
   end
 
-  defp move({"L", n}, {dir, x, y}) do
-    new_dir = case dir do
-      "N" -> "W"
-      "E" -> "N"
-      "S" -> "E"
-      "W" -> "S"
-    end
-    move_dir({new_dir, x, y}, n)
+  defp move({"N", x, y}, {"L", n}) do
+    {"W", x - n, y}
   end
 
-  defp move_dir({dir, x, y}, n) do
-    case dir do
-      "N" -> {dir, x, y+n}
-      "E" -> {dir, x+n, y}
-      "S" -> {dir, x, y-n}
-      "W" -> {dir, x-n, y}
-    end
+  defp move({"E", x, y}, {"R", n}) do
+    {"S", x, y - n}
+  end
+
+  defp move({"E", x, y}, {"L", n}) do
+    {"N", x, y + n}
+  end
+
+  defp move({"W", x, y}, {"R", n}) do
+    {"N", x, y + n}
+  end
+
+  defp move({"W", x, y}, {"L", n}) do
+    {"S", x, y - n}
+  end
+
+  defp move({"S", x, y}, {"R", n}) do
+    {"W", x - n, y}
+  end
+
+  defp move({"S", x, y}, {"L", n}) do
+    {"E", x + n, y}
   end
 end

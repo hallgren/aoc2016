@@ -1,34 +1,37 @@
 defmodule Day2 do
   def part_1() do
+    {1, 1}
+    |> get_code(instructions())
+  end
+
+  defp instructions() do
     File.read!("assets/day2.txt")
-      |> String.split("\n")
-      |> Enum.filter(fn(s) -> s != "" end)
-      |> get_code({1, 1})
+    |> String.trim()
+    |> String.split("\n")
+    |> Enum.map(fn(s) -> String.codepoints(s) end)
   end
 
-  defp get_code([], {r, c}) do end
+  defp get_code(_, []) do end
 
-  defp get_code([head | tail], {r, c}) do
-    p = get_number(head, {r, c})
-    get_code(tail, p)
+  defp get_code({r, c}, [ins | tail]) do
+    {r, c}
+    |> process(ins)
+    |> get_code(tail)
   end
 
-  defp get_number(seq, {r, c}) do
-    seq
-      |> String.codepoints()
-      |> process({r,c})
-  end
+  defp process({r, c}, []) do
 
-  defp process([], {r, c}) do
     IO.puts(get_at(keypad(), r, c))
     {r, c}
   end
 
-  defp process([head | tail], {r, c}) do
-    process(tail, move(head, {r, c}))
+  defp process({r, c}, [ins | tail]) do
+    {r, c}
+    |> move(ins)
+    |> process(tail)
   end
 
-  def move(dir, {r, c}) do
+  def move({r, c}, dir) do
     case dir do
       "R" -> move_right(r, c)
       "L" -> move_left(r, c)
