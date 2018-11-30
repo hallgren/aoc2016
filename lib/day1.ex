@@ -25,7 +25,7 @@ defmodule Day1 do
   end
 
   defp destination(instructions) when is_list(instructions) do
-    {"N", 0, 0} |> get_pos(instructions)
+    {0, 0, 0} |> get_pos(instructions)
   end
 
   defp get_pos(pos, []) do
@@ -38,35 +38,32 @@ defmodule Day1 do
     |> get_pos(tail)
   end
 
-  defp move({"N", x, y}, {"R", n}) do
-    {"E", x + n, y}
+  defp move({dir, x, y}, {"R", n}) do
+    dir + 1 |>
+    rem(4) |>
+    move(x,y,n)
   end
 
-  defp move({"N", x, y}, {"L", n}) do
-    {"W", x - n, y}
+  defp move({dir, x, y}, {"L", n}) do
+    dir + 3 |>
+    rem(4) |>
+    move(x,y,n)
   end
 
-  defp move({"E", x, y}, {"R", n}) do
-    {"S", x, y - n}
+  defp move(0, x, y, n) do
+    { 0, x, y + n }
   end
 
-  defp move({"E", x, y}, {"L", n}) do
-    {"N", x, y + n}
+  defp move(1, x, y, n) do
+    { 1, x + n, y }
   end
 
-  defp move({"W", x, y}, {"R", n}) do
-    {"N", x, y + n}
+  defp move(2, x, y, n) do
+    { 2, x, y - n }
   end
 
-  defp move({"W", x, y}, {"L", n}) do
-    {"S", x, y - n}
+  defp move(3, x, y, n) do
+    { 3, x - n, y }
   end
 
-  defp move({"S", x, y}, {"R", n}) do
-    {"W", x - n, y}
-  end
-
-  defp move({"S", x, y}, {"L", n}) do
-    {"E", x + n, y}
-  end
 end
